@@ -219,22 +219,20 @@ abstract class BaseVideoTrimmerView @JvmOverloads constructor(
     @UiThread
     private fun onVideoPrepared(mp: MediaPlayer) {
         // Adjust the size of the video
-        // so it fits on the screen
+        // so it fits on the screen        
         val videoWidth = mp.videoWidth
         val videoHeight = mp.videoHeight
         val videoProportion = videoWidth.toFloat() / videoHeight.toFloat()
         val screenWidth = videoViewContainer.width
         val screenHeight = videoViewContainer.height
         val screenProportion = screenWidth.toFloat() / screenHeight.toFloat()
-        val lp = videoView.layoutParams
-        if (videoProportion > screenProportion) {
-            lp.width = screenWidth
-            lp.height = (screenWidth.toFloat() / videoProportion).toInt()
+        val scaleX = videoProportion / screenProportion
+        if (scaleX >= 1f) {
+            videoViewContainer.scaleX = scaleX
         } else {
-            lp.width = (videoProportion * screenHeight.toFloat()).toInt()
-            lp.height = screenHeight
+            videoViewContainer.scaleY = 1f / scaleX
         }
-        videoView.layoutParams = lp
+       
         playView.visibility = View.VISIBLE
         duration = videoView.duration
         setSeekBarPosition()
